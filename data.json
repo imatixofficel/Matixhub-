@@ -1,0 +1,90 @@
+{
+ "card": {
+  "number": "5859831138857908",
+  "bank": "بانک تجارت",
+  "holder": "محمد متین مختاری"
+ },
+ "tg_order": "Wematix",
+ "tg_support": "Imatix7",
+ "insta_url": "https://www.instagram.com/matixhub",
+ "insta": {
+  "handle": "@matixhub",
+  "posts": "9",
+  "followers": "2986",
+  "following": "132",
+  "date": "آمار پیج در ۱۵ آبان ۱۴۰۵"
+ },
+ "products": [
+  {
+   "id": "c1",
+   "name": "دوره جامع هوش مصنوعی",
+   "cat": "دوره آموزشی",
+   "desc": "از صفر تا حرفه‌ای، قدم به قدم",
+   "price": "0",
+   "stock": "",
+   "img": ""
+  },
+  {
+   "id": "c2",
+   "name": "دوره جامع پرامپت‌نویسی",
+   "cat": "دوره آموزشی",
+   "desc": "از صفر تا حرفه‌ای، با قدرت پرامپت‌ها",
+   "price": "0",
+   "stock": "",
+   "img": ""
+  },
+  {
+   "id": "c3",
+   "name": "Matix VPN",
+   "cat": "سرویس VPN",
+   "desc": "اتصال سریع، بدون محدودیت",
+   "price": "0",
+   "stock": "",
+   "img": ""
+  }
+ ],
+ "posts": [
+  {
+   "o": 0,
+   "type": "text",
+   "text": "اینجا متیکستر است: ترفندها و تازه‌های هوش مصنوعی را کوتاه و ساده می‌نویسم و ویدیوهای اینستاگرام را همین‌جا می‌گذارم.",
+   "meta": "متن",
+   "btn": "دنبال کردن",
+   "link": "https://www.instagram.com/matixhub",
+   "src": "",
+   "img": ""
+  },
+  {
+   "o": 1,
+   "type": "video",
+   "text": "ادیت ویدیو با Magic Editor؛ سریع و بدون دردسر.",
+   "meta": "ویدیو - ۴۶۲ بازدید",
+   "btn": "مشاهده در اینستاگرام",
+   "link": "https://www.instagram.com/matixhub",
+   "src": "",
+   "img": ""
+  },
+  {
+   "o": 2,
+   "type": "video",
+   "text": "درآمدزایی با اینستاگرام و هوش مصنوعی؛ از کجا شروع کنیم؟",
+   "meta": "ویدیو - ۱۳۸ بازدید",
+   "btn": "مشاهده در اینستاگرام",
+   "link": "https://www.instagram.com/matixhub",
+   "src": "",
+   "img": ""
+  },
+  {
+   "o": 3,
+   "type": "video",
+   "text": "ساخت صدای طبیعی با هوش مصنوعی.",
+   "meta": "ویدیو - ۲۸ هزار بازدید",
+   "btn": "مشاهده در اینستاگرام",
+   "link": "https://www.instagram.com/matixhub",
+   "src": "",
+   "img": ""
+  }
+ ],
+ "texts": {},
+ "logo": ""
+}
