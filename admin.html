@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="fa" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' data: blob: https:; connect-src 'self' https://api.github.com; base-uri 'none'; form-action 'none'">
+<title>پنل مدیریت Matix hub</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font:15px/1.7 Tahoma,Vazirmatn,sans-serif;background:#eef4ff;color:#0b1b4a;padding:14px 14px 90px}
+h1{font-size:20px;margin:6px 0 12px}.box,.s{background:#fff;border:1px solid #e3e9f5;border-radius:16px;padding:14px;margin:0 0 12px}
+.s>summary{font-weight:700;cursor:pointer}.s[open]>summary{margin-bottom:10px}
+.f{display:block;margin:0 0 10px}.f span{display:block;font-size:13px;color:#5b6787;word-break:break-word}
+input,textarea,select{width:100%;padding:10px 12px;border:1px solid #cfe0ff;border-radius:12px;font:inherit;background:#fff;color:inherit}
+textarea{min-height:80px}button{font:inherit;padding:10px 16px;border:0;border-radius:12px;background:#1d68ea;color:#fff;cursor:pointer;margin:2px}
+button.d{background:#d33}.it{border:1px dashed #b9cdf5;border-radius:14px;padding:10px;margin:0 0 12px}.r{display:flex;gap:4px}
+.pv{max-width:100%;max-height:120px;border-radius:10px;display:block;margin:4px 0}small{color:#5b6787}
+#bar{position:fixed;inset:auto 0 0 0;background:#fff;border-top:1px solid #e3e9f5;padding:10px 14px;display:none;align-items:center;gap:10px}
+#msg{flex:1;font-size:13px;color:#c22}#msg.ok{color:#0a7a3d}ol{padding-inline-start:20px;margin:6px 0}
+</style></head><body>
+<h1>پنل مدیریت Matix hub</h1>
+<div class="box" id="login">
+<small>برای اتصال یک بار توکن GitHub لازم است:<ol><li>GitHub ← Settings ← Developer settings ← Fine-grained tokens ← Generate new token</li><li>Repository access: فقط ریپازیتوری همین سایت</li><li>Permissions ← Contents: <b>Read and write</b></li></ol>توکن فقط در مرورگر شما می‌ماند و به جای دیگری فرستاده نمی‌شود.</small>
+<label class="f"><span>نام کاربری GitHub</span><input id="o" dir="ltr" autocomplete="off"></label>
+<label class="f"><span>نام ریپازیتوری</span><input id="r" dir="ltr" autocomplete="off"></label>
+<label class="f"><span>شاخه (معمولاً main)</span><input id="b" dir="ltr" value="main"></label>
+<label class="f"><span>توکن</span><input id="t" type="password" dir="ltr" autocomplete="off"></label>
+<label class="f"><input id="rm" type="checkbox" style="width:auto"> مرا در این دستگاه به خاطر بسپار</label>
+<button id="go" type="button">اتصال</button>
+</div>
+<div id="app"></div>
+<div id="bar"><button id="sv" type="button">ذخیره و انتشار</button><div id="msg"></div></div>
+<script>
+(function(){
+var $=function(s){return document.querySelector(s)},LS=localStorage,SS=sessionStorage,D=null,SHA=null,SRC=null,PV={};
+var DEF={card:{number:'5859831138857908',bank:'بانک تجارت',holder:'محمد متین مختاری'},tg_order:'Wematix',tg_support:'Imatix7',insta_url:'https://www.instagram.com/matixhub',insta:{handle:'@matixhub',posts:9,followers:2986,following:132,date:'آمار پیج در ۱۵ آبان ۱۴۰۵'},products:[],posts:[],texts:{},logo:''};
+function qa(s,r){return [].slice.call(r.querySelectorAll(s))}
+function en(s){return String(s==null?'':s).replace(/[۰-۹]/g,function(d){return d.charCodeAt(0)-1776}).replace(/[٠-٩]/g,function(d){return d.charCodeAt(0)-1632}).trim()}
+function h(t,a){var e=document.createElement(t);for(var k in a||{}){if(k==='c')e.className=a[k];else if(k==='t')e.textContent=a[k];else if(k.slice(0,2)==='on')e[k]=a[k];else e.setAttribute(k,a[k])}for(var i=2;i<arguments.length;i++)if(arguments[i])e.appendChild(arguments[i]);return e}
+function msg(t,ok){var m=$('#msg');m.textContent=t;m.className=ok?'ok':''}
+function b64(u){var s='';for(var i=0;i<u.length;i+=8192)s+=String.fromCharCode.apply(null,u.subarray(i,i+8192));return btoa(s)}
+function dec(c){var s=atob(c.replace(/\s/g,''));return new TextDecoder().decode(Uint8Array.from(s,function(x){return x.charCodeAt(0)}))}
+function cfg(){return{o:$('#o').value.trim(),r:$('#r').value.trim(),b:$('#b').value.trim()||'main',t:$('#t').value.trim()}}
+function gh(m,p,body){var c=cfg();if(body)body.branch=c.b;
+return fetch('https://api.github.com/repos/'+encodeURIComponent(c.o)+'/'+encodeURIComponent(c.r)+'/contents/'+p+(m==='GET'?'?ref='+encodeURIComponent(c.b)+'&t='+Date.now():''),{method:m,headers:{Authorization:'Bearer '+c.t,Accept:'application/vnd.github+json'},body:body?JSON.stringify(body):undefined,cache:'no-store'}).then(function(r){
+if(r.status===401)throw Error('توکن اشتباه یا منقضی است');if(r.status===403)throw Error('دسترسی کافی نیست (Contents: Read and write)');if(r.status===404&&m==='GET')return null;if(!r.ok)throw Error('خطا '+r.status+' — نام کاربری، ریپازیتوری و شاخه را بررسی کنید');return r.json()})}
+function merge(d){var r=JSON.parse(JSON.stringify(DEF));for(var k in d){if(r[k]&&typeof r[k]==='object'&&!Array.isArray(r[k])&&d[k]&&typeof d[k]==='object')Object.assign(r[k],d[k]);else r[k]=d[k]}return r}
+function seed(){
+if(!D.products.length)D.products=qa('#courses .course',SRC).map(function(a){return{id:a.getAttribute('data-id'),name:a.getAttribute('data-n'),cat:a.getAttribute('data-m'),desc:(a.querySelector('.pr p')||{}).textContent||'',price:+a.getAttribute('data-p')||0,stock:'',img:''}});
+if(!D.posts.length)D.posts=qa('#mx .tw',SRC).map(function(a,i){var l=a.querySelector('.tw-f a'),v=a.querySelector('.vw');return{o:i,type:a.getAttribute('data-t'),text:a.querySelector('.tw-b>p').textContent,meta:a.querySelector('.tw-f span').textContent,btn:l.textContent,link:l.getAttribute('href'),src:v?v.getAttribute('data-src')||'':'',img:''}})}
+function texts(){var w=SRC.createTreeWalker(SRC.body,NodeFilter.SHOW_TEXT),n,s={},L=[];while(n=w.nextNode()){var p=n.parentNode;if(p.nodeName==='SCRIPT'||p.nodeName==='STYLE'||p.closest('.prods,#mx .feed'))continue;var t=n.nodeValue.trim();if(t.length>1&&!s[t]){s[t]=1;L.push(t)}}return L}
+function fld(l,o,k,x){x=x||{};var i=h(x.area?'textarea':'input',{type:'text'});i.value=o[k]==null?'':o[k];i.oninput=function(){o[k]=i.value};if(x.dir)i.dir=x.dir;return h('label',{c:'f'},h('span',{t:l}),i)}
+function img(l,o,k){var pv=h('img',{c:'pv'}),st=h('small'),fi=h('input',{type:'file',accept:'image/jpeg,image/png,image/webp'});
+function show(){var u=o[k];pv.style.display=u?'':'none';pv.src=PV[u]||u||''}
+fi.onchange=function(){var f=fi.files[0];if(!f)return;var ex={'image/jpeg':'jpg','image/png':'png','image/webp':'webp'}[f.type];if(!ex||f.size>3e6){st.textContent='فقط JPG / PNG / WEBP تا ۳ مگابایت';return}
+st.textContent='در حال آپلود…';var r=new FileReader();r.onload=function(){var p='img/'+Date.now()+'.'+ex;gh('PUT',p,{message:'upload image',content:b64(new Uint8Array(r.result))}).then(function(){o[k]=p;PV[p]=URL.createObjectURL(f);show();st.textContent='آپلود شد ✓ (فراموش نکنید ذخیره بزنید)'}).catch(function(e){st.textContent=e.message})};r.readAsArrayBuffer(f)};
+show();return h('div',{c:'f'},h('span',{t:l}),pv,fi,st)}
+function sec(t,c){var d=h('details',{c:'s'},h('summary',{t:t}));d.appendChild(c);return d}
+function prodUI(){var w=h('div');function draw(){w.textContent='';D.products.forEach(function(p,i){var c=h('div',{c:'it'});
+c.appendChild(fld('نام',p,'name'));c.appendChild(fld('توضیح کوتاه',p,'desc'));c.appendChild(fld('نوع (مثلاً دوره آموزشی)',p,'cat'));
+c.appendChild(fld('قیمت به تومان (۰ = در تلگرام اعلام می‌شود)',p,'price',{dir:'ltr'}));c.appendChild(fld('موجودی (خالی = نامحدود، ۰ = ناموجود)',p,'stock',{dir:'ltr'}));
+c.appendChild(img('عکس بنر',p,'img'));c.appendChild(h('button',{c:'d',type:'button',t:'حذف محصول',onclick:function(){if(confirm('این محصول حذف شود؟')){D.products.splice(i,1);draw()}}}));w.appendChild(c)});
+w.appendChild(h('button',{type:'button',t:'+ محصول جدید',onclick:function(){D.products.push({id:'c'+Date.now().toString(36),name:'محصول جدید',cat:'',desc:'',price:0,stock:'',img:''});draw()}}))}
+draw();return w}
+function cardUI(){var w=h('div');w.appendChild(fld('شماره کارت (۱۶ رقم)',D.card,'number',{dir:'ltr'}));w.appendChild(fld('نام بانک',D.card,'bank'));w.appendChild(fld('به نام',D.card,'holder'));
+w.appendChild(fld('آیدی تلگرام دریافت سفارش (بدون @)',D,'tg_order',{dir:'ltr'}));w.appendChild(fld('آیدی تلگرام پشتیبانی و کانال (بدون @)',D,'tg_support',{dir:'ltr'}));w.appendChild(fld('لینک اینستاگرام',D,'insta_url',{dir:'ltr'}));return w}
+function instaUI(){var w=h('div'),I=D.insta;w.appendChild(fld('آیدی پیج (مثل @matixhub)',I,'handle',{dir:'ltr'}));w.appendChild(fld('تعداد پست',I,'posts',{dir:'ltr'}));w.appendChild(fld('تعداد فالوور',I,'followers',{dir:'ltr'}));w.appendChild(fld('تعداد دنبال‌شونده',I,'following',{dir:'ltr'}));w.appendChild(fld('متن تاریخ آمار',I,'date'));return w}
+function postUI(){var w=h('div');function mv(i,d){var j=i+d;if(j<0||j>=D.posts.length)return;var t=D.posts[i];D.posts[i]=D.posts[j];D.posts[j]=t;draw()}
+function draw(){w.textContent='';D.posts.forEach(function(p,i){var c=h('div',{c:'it'});
+if(p.o==null){var s=h('select');[['text','متن'],['video','ویدیو']].forEach(function(x){var o=h('option',{value:x[0],t:x[1]});if(p.type===x[0])o.selected=true;s.appendChild(o)});s.onchange=function(){p.type=s.value;draw()};c.appendChild(h('label',{c:'f'},h('span',{t:'نوع پست'}),s))}else c.appendChild(h('small',{t:'نوع: '+(p.type==='video'?'ویدیو':'متن')}));
+c.appendChild(fld('متن پست',p,'text',{area:1}));c.appendChild(fld('زیرنویس (مثلاً ویدیو - ۴۶۲ بازدید)',p,'meta'));c.appendChild(fld('متن دکمه',p,'btn'));c.appendChild(fld('لینک دکمه',p,'link',{dir:'ltr'}));
+if(p.type==='video'){c.appendChild(fld('لینک مستقیم ویدیو mp4 (اختیاری)',p,'src',{dir:'ltr'}));c.appendChild(img('کاور ویدیو',p,'img'))}
+var r=h('div',{c:'r'});r.appendChild(h('button',{type:'button',t:'↑',onclick:function(){mv(i,-1)}}));r.appendChild(h('button',{type:'button',t:'↓',onclick:function(){mv(i,1)}}));r.appendChild(h('button',{c:'d',type:'button',t:'حذف',onclick:function(){D.posts.splice(i,1);draw()}}));c.appendChild(r);w.appendChild(c)});
+w.appendChild(h('button',{type:'button',t:'+ پست جدید',onclick:function(){D.posts.push({o:null,type:'text',text:'',meta:'متن',btn:'دنبال کردن',link:D.insta_url,src:'',img:''});draw()}}))}
+draw();return w}
+function textUI(){var w=h('div'),q=h('input',{type:'search',placeholder:'جستجو در متن‌ها…'}),l=h('div');w.appendChild(q);w.appendChild(h('small',{t:'هر متن را بخواهید عوض کنید. خالی = بدون تغییر.'}));w.appendChild(l);
+var rows=texts().map(function(t){var i=h('input',{type:'text',placeholder:t});i.value=D.texts[t]||'';i.oninput=function(){if(i.value)D.texts[t]=i.value;else delete D.texts[t]};var r=h('label',{c:'f'},h('span',{t:t}),i);r.setAttribute('data-s',t);l.appendChild(r);return r});
+q.oninput=function(){rows.forEach(function(r){r.style.display=r.getAttribute('data-s').indexOf(q.value)>-1?'':'none'})};return w}
+function ui(){var a=$('#app');a.textContent='';a.appendChild(sec('محصولات (قیمت، موجودی، عکس)',prodUI()));a.appendChild(sec('کارت و لینک‌ها',cardUI()));a.appendChild(sec('آمار اینستاگرام',instaUI()));a.appendChild(sec('متیکستر (پست‌ها)',postUI()));a.appendChild(sec('لوگو و آیکون سایت',h('div',null,img('لوگوی جدید',D,'logo'))));a.appendChild(sec('همه‌ی متن‌های سایت',textUI()));$('#bar').style.display='flex';$('#login').style.display='none'}
+function connect(){var c=cfg();if(!c.o||!c.r||!c.t){msg('همه‌ی فیلدها را پر کنید');$('#bar').style.display='flex';return}
+LS.setItem('mh',JSON.stringify({o:c.o,r:c.r,b:c.b}));if($('#rm').checked){LS.setItem('mht',c.t);SS.removeItem('mht')}else{LS.removeItem('mht');SS.setItem('mht',c.t)}
+msg('در حال اتصال…',1);$('#bar').style.display='flex';
+Promise.all([gh('GET','data.json'),fetch('index.html',{cache:'no-store'}).then(function(r){return r.text()})]).then(function(a){SHA=a[0]?a[0].sha:null;D=merge(a[0]?JSON.parse(dec(a[0].content)):{});SRC=new DOMParser().parseFromString(a[1],'text/html');seed();ui();msg('متصل شد ✓',1)}).catch(function(e){msg(e.message)})}
+function save(){if(!D){msg('اول متصل شوید');return}
+D.card.number=en(D.card.number);if(!/^\d{16}$/.test(D.card.number))return msg('شماره کارت باید دقیقاً ۱۶ رقم باشد');
+D.tg_order=en(D.tg_order).replace(/^@/,'');D.tg_support=en(D.tg_support).replace(/^@/,'');
+if(!/^\w{3,32}$/.test(D.tg_order)||!/^\w{3,32}$/.test(D.tg_support))return msg('آیدی تلگرام فقط حروف انگلیسی، عدد و _ (۳ تا ۳۲ نویسه)');
+if(!/^https:\/\//.test(D.insta_url))return msg('لینک اینستاگرام باید با https:// شروع شود');
+for(var k in {posts:1,followers:1,following:1}){D.insta[k]=en(D.insta[k]);if(!/^\d{1,9}$/.test(D.insta[k]))return msg('آمار اینستاگرام باید عدد باشد')}
+for(var i=0;i<D.products.length;i++){var p=D.products[i];p.price=en(p.price)||'0';p.stock=en(p.stock);if(!/^\d{1,9}$/.test(p.price)||(p.stock!==''&&!/^\d{1,6}$/.test(p.stock)))return msg('قیمت و موجودی «'+p.name+'» باید عدد باشد')}
+for(var j=0;j<D.posts.length;j++){var q=D.posts[j];if(q.link&&!/^https:\/\//.test(q.link))return msg('لینک پست‌ها باید با https:// شروع شود');if(q.src&&!/^https:\/\//.test(q.src))return msg('لینک ویدیو باید با https:// شروع شود')}
+msg('در حال ذخیره…',1);
+gh('PUT','data.json',{message:'update site data',content:b64(new TextEncoder().encode(JSON.stringify(D,null,1))),sha:SHA||undefined}).then(function(r){SHA=r.content.sha;msg('ذخیره شد ✓ تا ۱ تا ۲ دقیقه دیگر روی سایت اعمال می‌شود',1)}).catch(function(e){msg(e.message)})}
+$('#go').onclick=connect;$('#sv').onclick=save;
+var s={};try{s=JSON.parse(LS.getItem('mh')||'{}')}catch(e){}
+if(!s.o&&/\.github\.io$/.test(location.hostname)){s.o=location.hostname.split('.')[0];s.r=location.pathname.split('/')[1]||''}
+$('#o').value=s.o||'';$('#r').value=s.r||'';$('#b').value=s.b||'main';$('#t').value=SS.getItem('mht')||LS.getItem('mht')||'';$('#rm').checked=!!LS.getItem('mht');
+})();
+</script></body></html>
