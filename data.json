@@ -45,41 +45,11 @@
  ],
  "posts": [
   {
-   "o": 0,
+   "o": null,
    "type": "text",
-   "text": "اینجا متیکستر اسqeeeeeeeeeeeeeeeeeeت: ترفندها و تازه‌های هوش مصنوعی را کوتاه و ساده می‌نویسم و ویدیوهای اینستاگرام را همین‌جا می‌گذارم.",
+   "text": " سلام دوستان سایت به زودی راه اندازی میشه ",
    "meta": "متن",
-   "btn": "دنبال کردن",
-   "link": "https://www.instagram.com/matixhub",
-   "src": "",
-   "img": ""
-  },
-  {
-   "o": 1,
-   "type": "video",
-   "text": "ادیت ویدیو با Magic Editor؛ سریع و بدون دردسر.",
-   "meta": "ویدیو - ۴۶۲ بازدید",
-   "btn": "مشاهده در اینستاگرام",
-   "link": "https://www.instagram.com/matixhub",
-   "src": "",
-   "img": ""
-  },
-  {
-   "o": 2,
-   "type": "video",
-   "text": "درآمدزایی با اینستاگرام و هوش مصنوعی؛ از کجا شروع کنیم؟",
-   "meta": "ویدیو - ۱۳۸ بازدید",
-   "btn": "مشاهده در اینستاگرام",
-   "link": "https://www.instagram.com/matixhub",
-   "src": "",
-   "img": ""
-  },
-  {
-   "o": 3,
-   "type": "video",
-   "text": "ساخت صدای طبیعی با هوش مصنوعی.",
-   "meta": "ویدیو - ۲۸ هزار بازدید",
-   "btn": "مشاهده در اینستاگرام",
+   "btn": "باشه",
    "link": "https://www.instagram.com/matixhub",
    "src": "",
    "img": ""
